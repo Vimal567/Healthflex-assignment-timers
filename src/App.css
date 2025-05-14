@@ -7,3 +7,13 @@
 body {
   font-family: Arial, sans-serif;
 }
+
+.page-wrapper {
+  margin-top: 3rem;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  background-color: none;
+}
