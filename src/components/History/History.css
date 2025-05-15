@@ -1,0 +1,39 @@
+.history-page {
+  padding: 1rem;
+  min-height: 95vh;
+}
+
+.history-page .completed-timers-list {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 50vh;
+  overflow-y: auto;
+}
+
+.completed-timers-list .completed-timer {
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  border-bottom: 1px solid gray;
+}
+
+.completed-timers-list .timer-name {
+  font-weight: bold;
+}
+
+.completed-timers-list .timer-category {
+  font-style: italic;
+  color: #666;
+}
+
+.completed-timers-list .timer-duration {
+  margin-top: 5px;
+}
+
+.completed-timers-list .timer-completion-time {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #999;
+}

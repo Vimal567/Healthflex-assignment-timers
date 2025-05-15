@@ -17,3 +17,11 @@ button {
   cursor: pointer;
   background-color: none;
 }
+
+.no-data {
+  height: 75vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(16, 124, 16);
+}

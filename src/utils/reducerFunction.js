@@ -30,7 +30,7 @@ export const timerReducer = (state, action) => {
     case 'COMPLETE_TIMER':
       return state.map(timer =>
         timer.id === action.payload
-          ? { ...timer, status: 'Completed', isCompleted: true }
+          ? { ...timer, status: 'Completed', isCompleted: true, completedAt: new Date().toLocaleTimeString() }
           : timer
       );
 
@@ -38,27 +38,6 @@ export const timerReducer = (state, action) => {
       return state.map(timer =>
         timer.id === action.payload
           ? { ...timer, status: 'Paused', isCompleted: false }
-          : timer
-      );
-
-    case 'RESET_CATEGORY_TIMERS':
-      return state.map(timer =>
-        timer.category === action.payload
-          ? { ...timer, status: 'paused', isCompleted: false }  // Reset timers for the category
-          : timer
-      );
-
-    case 'PAUSE_CATEGORY_TIMERS':
-      return state.map(timer =>
-        timer.category === action.payload
-          ? { ...timer, status: 'paused' }  // Pause timers for the category
-          : timer
-      );
-
-    case 'START_CATEGORY_TIMERS':
-      return state.map(timer =>
-        timer.category === action.payload
-          ? { ...timer, status: 'running' }  // Start timers for the category
           : timer
       );
 

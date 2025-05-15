@@ -109,6 +109,10 @@
   cursor: pointer;
 }
 
+.accordion-section .accordion-header.active {
+  background-color: rgb(231, 231, 144);
+}
+
 .accordion-header .actions-container button {
   margin-left: 5px;
   border-radius: 20px;
@@ -133,6 +137,7 @@
   overflow: hidden;
   border: 1px solid black;
   transition: max-height 0.2s ease-out, padding 0.2s ease-out;
+  cursor: pointer;
 }
 
 .accordion-section .accordion-content.open {
@@ -145,18 +150,13 @@
   border-bottom: 1px solid black;
 }
 
+.accordion-content.open .details-container:hover {
+  background-color: rgb(245, 245, 224);
+}
+
 .accordion-content.open .details-container:nth-last-child() {
   border-bottom: none;
 }
-
-.home-section .no-timer {
-  height: 75vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: rgb(16, 124, 16);
-}
-
 
 @media screen and (max-width: 768px) {
   .home-section .timer-section {

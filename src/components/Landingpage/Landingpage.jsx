@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useReducer } from 'react';
 import './Landingpage.css';
 import { useSnackbar } from 'notistack';
 import { timerReducer } from '../../utils/reducerFunction';
+import { formatTime } from '../../utils/helper';
+import { useNavigate } from 'react-router-dom';
 
 const Landingpage = () => {
   const categories = ["Workout", "Study", "Break"];
@@ -11,13 +13,14 @@ const Landingpage = () => {
 
   const modalRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
-  const [openIndex, setOpenIndex] = useState('');
+  const [activeCategory, setActiveCategory] = useState('');
   const [timers, dispatch] = useReducer(timerReducer, []);
 
 
-  const toggleSection = (index) => {
-    setOpenIndex(openIndex === index ? '' : index); // Close if the same section is clicked again
+  const toggleCategorySection = (category) => {
+    setActiveCategory(activeCategory === category ? '' : category); // Close if the same section is clicked again
   };
 
   const addTimer = (event) => {
@@ -37,7 +40,9 @@ const Landingpage = () => {
     }
 
     dispatch({ type: 'ADD_TIMER', payload: newTimer });
-    setNewTimer({ name: '', duration: '', category: '' });
+    //Show the timer added category
+    setActiveCategory(newTimer.category);
+    setNewTimer({ name: '', duration: 0, category: '' });
     closeModal();
   };
 
@@ -56,6 +61,10 @@ const Landingpage = () => {
         if (newRemaining <= 0) {
           clearInterval(intervals[id]);
           setIntervals((prevInt => prevInt[id] !== intervals[id]));
+          alert(`Timer "${timers.find(timer => timer.id === id)?.name}" is completed!`);
+          if (timers.filter(timerData => !timerData.isCompleted).length === 0) {
+            navigate('/history');
+          }
           dispatch({ type: 'COMPLETE_TIMER', payload: id });
           const { [id]: __, ...restActive } = prev;
           return restActive;
@@ -120,14 +129,6 @@ const Landingpage = () => {
         dispatch({ type: 'RESET_TIMER', payload: timer.id });
       });
   };
-
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-  };
-
 
   const openModal = () => {
     modalRef.current.style.display = 'flex';
@@ -200,7 +201,7 @@ const Landingpage = () => {
         </div>
       </div>
 
-      {timers.length > 0 && <div className="timer-section">
+      {timers.filter(timerData => !timerData.isCompleted).length > 0 && <div className="timer-section">
         {/* Timer view section */}
         <div className="view-timer-section">
         </div>
@@ -210,7 +211,7 @@ const Landingpage = () => {
           <div className="accordion">
             {categories.map((category, index) => (
               <div className="accordion-section" key={index}>
-                <div className="accordion-header" onClick={() => toggleSection(category)}>
+                <div className={`accordion-header ${activeCategory === category ? 'active' : ''}`} onClick={() => toggleCategorySection(category)}>
                   <h2>{category}</h2>
                   <div className="actions-container">
                     <button type="button" className='start-all' onClick={(e) => handleStartCategoryTimers(e, category)}>Start all</button>
@@ -218,13 +219,13 @@ const Landingpage = () => {
                     <button type="button" className='reset-all' onClick={(e) => handleResetCategoryTimers(e, category)}>Reset all</button>
                   </div>
                 </div>
-                <div className={`accordion-content ${openIndex === category ? 'open' : ''}`}>
+                <div className={`accordion-content ${activeCategory === category ? 'open' : ''}`}>
                   {timers
-                    .filter(timerData => timerData.category === category)
+                    .filter(timerData => timerData.category === category && !timerData.isCompleted)
                     .map((filteredTimer, timerIndex) => (
                       <div className="timer-details" key={timerIndex}>
                         <div className="details-container">
-                          <div>Label: {filteredTimer.name.charAt(0).toUpperCase() + filteredTimer.name.slice(1)}</div>
+                          <div>Name: {filteredTimer.name.charAt(0).toUpperCase() + filteredTimer.name.slice(1)}</div>
                           <div>Time left: {formatTime(activeTimers[filteredTimer.id] ?? filteredTimer.duration)}</div>
                           <div>Status: {filteredTimer.status}</div>
                         </div>
@@ -237,8 +238,13 @@ const Landingpage = () => {
         </div>
       </div>}
 
-      {/* No timer present */}
-      {timers.length === 0 && <div className="no-timer">
+      {/* No active timer present */}
+      {timers.filter(timerData => !timerData.isCompleted).length === 0 && <div className="no-data">
+        No active timers available. Check history page.
+      </div>}
+
+      {/* No timesr present */}
+      {timers.length === 0 && <div className="no-data">
         No timers available. Please add a timer.
       </div>}
 
