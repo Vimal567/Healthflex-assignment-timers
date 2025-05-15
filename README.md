@@ -4,12 +4,22 @@ This is a React JS app that allows users to create, manage, and interact with cu
 
 ---
 
+## Visuals
+
+Here’s a screenshot of the Timer App:
+
+![Home Page Screenshot](assets/home-mobile-view.png)
+![History Page Screenshot](assets/history-mobile-view.png)
+
+---
+
+
 ## Features
 
 ### Core Features:
 1. **Add Timer**
    - Create a timer with name, duration (in seconds), and category.
-   - Store timers locally using AsyncStorage.
+   - Store timers locally using localStorage.
    
 2. **Timer List with Grouping**
    - View timers grouped by category (e.g., "Workout", "Study").
@@ -26,11 +36,11 @@ This is a React JS app that allows users to create, manage, and interact with cu
    - Bulk actions to start, pause, or reset all timers within a category.
 
 6. **User Feedback**
-   - Show a modal with a congratulatory message when a timer completes.
+   - Show snackbar with a congratulatory message when a timer completes.
 
 ### Enhanced Features:
 1. **Timer History**
-   - Keep a log of completed timers including the timer's name and completion time.
+   - A log of completed timers including the timer's name and completion time.
    - View the log in the "History" screen.
 
 2. **Customizable Alerts**
@@ -42,8 +52,8 @@ This is a React JS app that allows users to create, manage, and interact with cu
 ## Technical Details
 
 - **State Management**: `useState` and `useReducer` are used for managing the state of timers and categories.
-- **Navigation**: React Router or another routing library is used for navigation between the Home and History screens.
-- **Persistence**: Timers and history logs are persisted using `AsyncStorage`.
+- **Navigation**: React Router dom is used for navigation between the Home and History screens.
+- **Persistence**: Timers and history logs are persisted using `Local Storage`.
 - **Styling**: `StyleSheet` is used to create a responsive and clean layout.
 - **Timers**: Timers are managed with `setInterval` for countdowns.
 
@@ -84,12 +94,11 @@ This is a React JS app that allows users to create, manage, and interact with cu
 1. **Home Screen**: Add, view, and manage timers. Timers are grouped by category, and each can be started, paused, or reset.
 2. **History Screen**: View completed timers with their name and completion time.
 3. **Bulk Actions**: Start, pause, or reset all timers in a category with a single action.
-
 ---
 
 ## Assumptions
 
-- **Data Persistence**: Timers are stored locally using AsyncStorage, and timers will persist even after closing the app.
+- **Data Persistence**: Timers are stored locally using localStorage, and timers will persist even after closing the app.
 - **Timer Duration**: The user sets the timer in seconds, and the app handles countdown functionality.
 - **Completion Alert**: When a timer reaches zero, an on-screen modal will show a congratulatory message.
 

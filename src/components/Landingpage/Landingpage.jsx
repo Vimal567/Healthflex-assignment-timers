@@ -46,41 +46,54 @@ const Landingpage = () => {
     setNewTimer({ name: '', duration: 0, category: '' });
     closeModal();
   };
-
+  
   const startTimer = (id, duration) => {
     if (intervals[id]) {
-      // already running
-      return
-    };
+      // Already running
+      return;
+    }
     const remaining = activeTimers[id] ?? duration;
 
     dispatch({ type: 'START_TIMER', payload: id });
 
+    let halfwayNotified = false;  // Flag to track if the halfway alert has been shown
+
     const intervalId = setInterval(() => {
-      setActiveTimers(prev => {
+      setActiveTimers((prev) => {
         const newRemaining = prev[id] - 1;
+
+        // Check for halfway point alert
+        if (!halfwayNotified && newRemaining <= duration / 2) {
+          halfwayNotified = true;
+          enqueueSnackbar(`Halfway through! "${timers.find(timer => timer.id === id)?.name}" is at the halfway point.`, { variant: 'info' });
+        }
+
         if (newRemaining <= 0) {
           clearInterval(intervals[id]);
-          setIntervals((prevInt => prevInt[id] !== intervals[id]));
+          setIntervals((prevInt) => prevInt[id] !== intervals[id]);
           setSelectedTimer([]);
-          alert(`Timer "${timers.find(timer => timer.id === id)?.name}" is completed!`);
+          enqueueSnackbar(`Congratulations! "${timers.find(timer => timer.id === id)?.name}" is completed!`, { variant: 'success' });
           dispatch({ type: 'COMPLETE_TIMER', payload: id });
-          //When no active timers running and timer completed navigate to history page
-          if (timers.filter(timerData => !timerData.isCompleted).length <= 1) {
+
+          // When no active timers are running and timer is completed, navigate to history page
+          if (timers.filter((timerData) => !timerData.isCompleted).length <= 1) {
             setTimeout(() => {
               navigate('/history');
             }, 0);
           }
+
           const { [id]: __, ...restActive } = prev;
           return restActive;
         }
+
         return { ...prev, [id]: newRemaining };
       });
     }, 1000);
 
-    setActiveTimers(prev => ({ ...prev, [id]: remaining }));
-    setIntervals(prev => ({ ...prev, [id]: intervalId }));
+    setActiveTimers((prev) => ({ ...prev, [id]: remaining }));
+    setIntervals((prev) => ({ ...prev, [id]: intervalId }));
   };
+
 
 
   // Pause Timer
