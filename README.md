@@ -8,8 +8,8 @@ This is a React JS app that allows users to create, manage, and interact with cu
 
 Here’s a screenshot of the Timer App:
 
-![Home Page Screenshot](assets/home-mobile-view.png)
-![History Page Screenshot](assets/history-mobile-view.png)
+![Home Page Screenshot](https://github.com/user-attachments/assets/d894a58d-68eb-4d3c-9225-60c0abafb8e9)
+![History Page Screenshot](https://github.com/user-attachments/assets/a858ddfe-c163-4724-bc7d-93eef8ff46ee))
 
 ---
 
