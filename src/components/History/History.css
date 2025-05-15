@@ -3,6 +3,13 @@
   min-height: 95vh;
 }
 
+.history-page .heading-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .history-page .completed-timers-list {
   margin-top: 2rem;
   display: flex;

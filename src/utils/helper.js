@@ -9,10 +9,8 @@ export const formatTime = (seconds) => {
 };
 
 // Export history as JSON file
-export const exportHistory = () => {
-  const timers = JSON.parse(localStorage.getItem('timers')) || [];
-  const completedTimers = timers.filter(timer => timer.isCompleted);
-  const history = completedTimers.map(timer => ({
+export const exportHistory = (timers) => {
+  const history = timers.map(timer => ({
     name: timer.name,
     duration: timer.duration,
     category: timer.category,
