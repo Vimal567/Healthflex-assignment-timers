@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './History.css';
-import { formatTime } from '../../utils/helper';
+import { exportHistory, formatTime } from '../../utils/helper';
 
 const History = () => {
   const [completedTimers, setCompletedTimers] = useState([]);
@@ -31,6 +31,9 @@ const History = () => {
           ))}
         </div>
       )}
+      {completedTimers.length > 0 && <div className="tools-container">
+        <button type="button" className='export' onClick={exportHistory}>Export</button>
+      </div>}
     </div>
   );
 }

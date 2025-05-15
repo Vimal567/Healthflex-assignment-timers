@@ -4,20 +4,20 @@ import { useSnackbar } from 'notistack';
 import { timerReducer } from '../../utils/reducerFunction';
 import { formatTime } from '../../utils/helper';
 import { useNavigate } from 'react-router-dom';
+import Timer from '../Timer/Timer';
 
 const Landingpage = () => {
   const categories = ["Workout", "Study", "Break"];
   const [newTimer, setNewTimer] = useState({ name: '', duration: 0, category: '' });
   const [activeTimers, setActiveTimers] = useState({}); // { id: remainingSeconds }
   const [intervals, setIntervals] = useState({});
+  const [activeCategory, setActiveCategory] = useState('');
+  const [timers, dispatch] = useReducer(timerReducer, []);
+  const [selectedTimer, setSelectedTimer] = useState([]);
 
   const modalRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-
-  const [activeCategory, setActiveCategory] = useState('');
-  const [timers, dispatch] = useReducer(timerReducer, []);
-
 
   const toggleCategorySection = (category) => {
     setActiveCategory(activeCategory === category ? '' : category); // Close if the same section is clicked again
@@ -26,6 +26,7 @@ const Landingpage = () => {
   const addTimer = (event) => {
     event.preventDefault();
 
+    //Check if all fields are filled
     if (!newTimer.name) {
       enqueueSnackbar("Please enter a name for the timer.", { variant: 'warning' });
       return;
@@ -61,11 +62,15 @@ const Landingpage = () => {
         if (newRemaining <= 0) {
           clearInterval(intervals[id]);
           setIntervals((prevInt => prevInt[id] !== intervals[id]));
+          setSelectedTimer([]);
           alert(`Timer "${timers.find(timer => timer.id === id)?.name}" is completed!`);
-          if (timers.filter(timerData => !timerData.isCompleted).length === 0) {
-            navigate('/history');
-          }
           dispatch({ type: 'COMPLETE_TIMER', payload: id });
+          //When no active timers running and timer completed navigate to history page
+          if (timers.filter(timerData => !timerData.isCompleted).length <= 1) {
+            setTimeout(() => {
+              navigate('/history');
+            }, 0);
+          }
           const { [id]: __, ...restActive } = prev;
           return restActive;
         }
@@ -129,6 +134,10 @@ const Landingpage = () => {
         dispatch({ type: 'RESET_TIMER', payload: timer.id });
       });
   };
+
+  const onTimerSelection = (timerData) => {
+    setSelectedTimer([timerData]);
+  }
 
   const openModal = () => {
     modalRef.current.style.display = 'flex';
@@ -204,6 +213,15 @@ const Landingpage = () => {
       {timers.filter(timerData => !timerData.isCompleted).length > 0 && <div className="timer-section">
         {/* Timer view section */}
         <div className="view-timer-section">
+          {selectedTimer.length > 0 &&
+            <div>
+              <Timer remainingTime={activeTimers[selectedTimer[0].id] ? activeTimers[selectedTimer[0].id] : selectedTimer[0]?.duration} duration={selectedTimer[0]?.duration} />
+              <div className="actions-container">
+                <button type="button" className='start-button' onClick={() => startTimer(selectedTimer[0]?.id, selectedTimer[0]?.duration)}>Start</button>
+                <button type="button" className='pause-button' onClick={() => pauseTimer(selectedTimer[0]?.id)}>Pause</button>
+                <button type="button" className='reset-button' onClick={() => resetTimer(selectedTimer[0]?.id)}>Reset</button>
+              </div>
+            </div>}
         </div>
 
         {/* Timers list section */}
@@ -214,9 +232,9 @@ const Landingpage = () => {
                 <div className={`accordion-header ${activeCategory === category ? 'active' : ''}`} onClick={() => toggleCategorySection(category)}>
                   <h2>{category}</h2>
                   <div className="actions-container">
-                    <button type="button" className='start-all' onClick={(e) => handleStartCategoryTimers(e, category)}>Start all</button>
-                    <button type="button" className='pause-all' onClick={(e) => handlePauseCategoryTimers(e, category)}>Pause all</button>
-                    <button type="button" className='reset-all' onClick={(e) => handleResetCategoryTimers(e, category)}>Reset all</button>
+                    <button type="button" className='start-button' onClick={(e) => handleStartCategoryTimers(e, category)}>Start all</button>
+                    <button type="button" className='pause-button' onClick={(e) => handlePauseCategoryTimers(e, category)}>Pause all</button>
+                    <button type="button" className='reset-button' onClick={(e) => handleResetCategoryTimers(e, category)}>Reset all</button>
                   </div>
                 </div>
                 <div className={`accordion-content ${activeCategory === category ? 'open' : ''}`}>
@@ -224,7 +242,7 @@ const Landingpage = () => {
                     .filter(timerData => timerData.category === category && !timerData.isCompleted)
                     .map((filteredTimer, timerIndex) => (
                       <div className="timer-details" key={timerIndex}>
-                        <div className="details-container">
+                        <div className="details-container" onClick={() => onTimerSelection(filteredTimer)}>
                           <div>Name: {filteredTimer.name.charAt(0).toUpperCase() + filteredTimer.name.slice(1)}</div>
                           <div>Time left: {formatTime(activeTimers[filteredTimer.id] ?? filteredTimer.duration)}</div>
                           <div>Status: {filteredTimer.status}</div>

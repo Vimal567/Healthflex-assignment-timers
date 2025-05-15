@@ -30,7 +30,7 @@ export const timerReducer = (state, action) => {
     case 'COMPLETE_TIMER':
       return state.map(timer =>
         timer.id === action.payload
-          ? { ...timer, status: 'Completed', isCompleted: true, completedAt: new Date().toLocaleTimeString() }
+          ? { ...timer, status: 'Completed', isCompleted: true, completedAt: '44:32:33' }
           : timer
       );
 

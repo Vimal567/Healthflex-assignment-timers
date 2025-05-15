@@ -14,8 +14,6 @@
 
 .tools-container button {
   margin-left: 1rem;
-  border-radius: 20px;
-  padding: 5px 10px 5px 10px;
   color: white;
 }
 
@@ -30,7 +28,7 @@
 .add-timer-modal {
   position: absolute;
   width: 98%;
-  height: 80vh;
+  height: 90vh;
   display: none;
   justify-content: center;
   align-items: center;
@@ -85,6 +83,28 @@
   column-gap: 5%;
 }
 
+.timer-section .view-timer-section {
+  width: 100%;
+  height: 20rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.view-timer-section .actions-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.view-timer-section .actions-container button {
+  color: white;
+}
+
+.view-timer-section .actions-container button:hover {
+  color: rgb(231, 230, 230);
+}
+
 .timer-section .timers-list-section {
   width: 100%;
   height: 90vh;
@@ -115,20 +135,18 @@
 
 .accordion-header .actions-container button {
   margin-left: 5px;
-  border-radius: 20px;
-  padding: 5px 10px 5px 10px;
   color: white;
 }
 
-.actions-container .start-all {
+.actions-container .start-button {
   background-color: rgb(0, 124, 128);
 }
 
-.actions-container .pause-all {
+.actions-container .pause-button {
   background-color: gray;
 }
 
-.actions-container .reset-all {
+.actions-container .reset-button {
   background-color: rgb(245, 189, 84);
 }
 

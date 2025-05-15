@@ -7,7 +7,7 @@
   margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  height: 50vh;
+  height: 45rem;
   overflow-y: auto;
 }
 
@@ -36,4 +36,14 @@
   margin-top: 5px;
   font-size: 0.9em;
   color: #999;
+}
+
+.history-page .tools-container {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.history-page .tools-container .export {
+  background-color: rgb(67, 177, 82);
 }

@@ -16,6 +16,8 @@ button {
   border: none;
   cursor: pointer;
   background-color: none;
+  padding: 5px 10px 5px 10px;
+  border-radius: 20px;
 }
 
 .no-data {

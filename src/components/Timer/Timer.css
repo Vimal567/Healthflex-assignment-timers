@@ -1,0 +1,29 @@
+.circle-progress-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-progress-container .timer-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.circle-progress-container .timer-category {
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.circle-progress-container .timer-duration {
+  font-size: 1em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.circle-progress-container .timer-time-left {
+  font-size: 1.1em;
+  color: #333;
+  margin-top: 10px;
+}
