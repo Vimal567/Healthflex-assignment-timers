@@ -1,21 +1,30 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useReducer } from 'react';
 import './Landingpage.css';
 import { useSnackbar } from 'notistack';
+import { timerReducer } from '../../utils/reducerFunction';
 
 const Landingpage = () => {
-  const [timers, setTimers] = useState([]);
   const categories = ["Workout", "Study", "Break"];
   const [newTimer, setNewTimer] = useState({ name: '', duration: 0, category: '' });
+  const [activeTimers, setActiveTimers] = useState({}); // { id: remainingSeconds }
+  const [intervals, setIntervals] = useState({});
 
   const modalRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [openIndex, setOpenIndex] = useState('');
+  const [timers, dispatch] = useReducer(timerReducer, []);
+
+
+  const toggleSection = (index) => {
+    setOpenIndex(openIndex === index ? '' : index); // Close if the same section is clicked again
+  };
+
   const addTimer = (event) => {
     event.preventDefault();
 
-    // Check all fields are filled
     if (!newTimer.name) {
-      enqueueSnackbar("Please enter a name for the timer.", { varient: 'warning' });
+      enqueueSnackbar("Please enter a name for the timer.", { variant: 'warning' });
       return;
     }
     if (newTimer.duration <= 0) {
@@ -27,24 +36,98 @@ const Landingpage = () => {
       return;
     }
 
-    if (!newTimer.name || newTimer.duration <= 0 || !newTimer.category) {
-      return;
-    }
-
-    const updatedTimers = [...timers, newTimer];
-    setTimers(updatedTimers);
+    dispatch({ type: 'ADD_TIMER', payload: newTimer });
+    setNewTimer({ name: '', duration: '', category: '' });
     closeModal();
   };
 
+  const startTimer = (id, duration) => {
+    if (intervals[id]) {
+      // already running
+      return
+    };
+    const remaining = activeTimers[id] ?? duration;
 
-  const startTimer = (index) => {
+    dispatch({ type: 'START_TIMER', payload: id });
+
+    const intervalId = setInterval(() => {
+      setActiveTimers(prev => {
+        const newRemaining = prev[id] - 1;
+        if (newRemaining <= 0) {
+          clearInterval(intervals[id]);
+          setIntervals((prevInt => prevInt[id] !== intervals[id]));
+          dispatch({ type: 'COMPLETE_TIMER', payload: id });
+          const { [id]: __, ...restActive } = prev;
+          return restActive;
+        }
+        return { ...prev, [id]: newRemaining };
+      });
+    }, 1000);
+
+    setActiveTimers(prev => ({ ...prev, [id]: remaining }));
+    setIntervals(prev => ({ ...prev, [id]: intervalId }));
   };
 
-  const resetTimer = (index) => {
+
+  // Pause Timer
+  const pauseTimer = (id) => {
+    if (intervals[id]) {
+      clearInterval(intervals[id]);
+      setIntervals((prevInt => prevInt[id] !== intervals[id]));
+    }
   };
 
-  const pauseTimer = (index) => {
+  // Reset Timer
+  const resetTimer = (id) => {
+    if (intervals[id]) {
+      clearInterval(intervals[id]);
+      setIntervals((prevInt => prevInt[id] !== intervals[id]));
+    }
+    setActiveTimers(prev => {
+      const { [id]: _, ...rest } = prev;
+      return rest;
+    });
+    dispatch({ type: 'RESET_TIMER', payload: id });
   };
+
+  // Find all timers in the category and start them
+  const handleStartCategoryTimers = (event, category) => {
+    event.stopPropagation();
+    timers
+      .filter(timer => timer.category === category)
+      .forEach((timer) => {
+        startTimer(timer.id, timer.duration);
+      });
+  };
+
+  // Pause all timers in the category
+  const handlePauseCategoryTimers = (event, category) => {
+    event.stopPropagation();
+    timers
+      .filter(timer => timer.category === category)
+      .forEach((timer) => {
+        pauseTimer(timer.id);
+      });
+  };
+
+  // Reset all timers in the category
+  const handleResetCategoryTimers = (event, category) => {
+    event.stopPropagation();
+    timers
+      .filter(timer => timer.category === category)
+      .forEach((timer) => {
+        resetTimer(timer.id);
+        dispatch({ type: 'RESET_TIMER', payload: timer.id });
+      });
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
 
   const openModal = () => {
     modalRef.current.style.display = 'flex';
@@ -54,20 +137,21 @@ const Landingpage = () => {
     modalRef.current.style.display = 'none';
   };
 
-  // useEffect(() => {
-  //   const savedTimers = JSON.parse(localStorage.getItem('timers')) || [];
-  //   setTimers(savedTimers);
-  // }, []);
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('timers')) || [];
+    dispatch({ type: 'LOAD_TIMERS', payload: saved });
+  }, []);
 
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem('timers', JSON.stringify(timers));
+  }, [timers]);
 
   return (
     <div className='home-section page-wrapper'>
       {/* Manage Timers */}
       <div className="tools-container">
         <button type="button" className='add-timer' onClick={openModal}>Add Timer</button>
-        <button type="button" className='start-all' onClick={startTimer}>Start all</button>
-        <button type="button" className='pause-all' onClick={pauseTimer}>Pause all</button>
-        <button type="button" className='reset-all' onClick={resetTimer}>Reset all</button>
       </div>
 
       {/* Add Timer Modal */}
@@ -116,14 +200,47 @@ const Landingpage = () => {
         </div>
       </div>
 
-      <div className="timer-section">
+      {timers.length > 0 && <div className="timer-section">
+        {/* Timer view section */}
+        <div className="view-timer-section">
+        </div>
 
-      </div>
+        {/* Timers list section */}
+        <div className="timers-list-section">
+          <div className="accordion">
+            {categories.map((category, index) => (
+              <div className="accordion-section" key={index}>
+                <div className="accordion-header" onClick={() => toggleSection(category)}>
+                  <h2>{category}</h2>
+                  <div className="actions-container">
+                    <button type="button" className='start-all' onClick={(e) => handleStartCategoryTimers(e, category)}>Start all</button>
+                    <button type="button" className='pause-all' onClick={(e) => handlePauseCategoryTimers(e, category)}>Pause all</button>
+                    <button type="button" className='reset-all' onClick={(e) => handleResetCategoryTimers(e, category)}>Reset all</button>
+                  </div>
+                </div>
+                <div className={`accordion-content ${openIndex === category ? 'open' : ''}`}>
+                  {timers
+                    .filter(timerData => timerData.category === category)
+                    .map((filteredTimer, timerIndex) => (
+                      <div className="timer-details" key={timerIndex}>
+                        <div className="details-container">
+                          <div>Label: {filteredTimer.name.charAt(0).toUpperCase() + filteredTimer.name.slice(1)}</div>
+                          <div>Time left: {formatTime(activeTimers[filteredTimer.id] ?? filteredTimer.duration)}</div>
+                          <div>Status: {filteredTimer.status}</div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>}
 
       {/* No timer present */}
-      <div className="no-timer">
+      {timers.length === 0 && <div className="no-timer">
         No timers available. Please add a timer.
-      </div>
+      </div>}
 
     </div>
   );

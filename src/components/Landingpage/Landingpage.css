@@ -14,25 +14,17 @@
 
 .tools-container button {
   margin-left: 1rem;
-  border-radius: 7px;
+  border-radius: 20px;
   padding: 5px 10px 5px 10px;
   color: white;
 }
 
+.tools-container button:hover {
+  color: rgb(221, 220, 220);
+}
+
 .tools-container .add-timer {
   background-color: green;
-}
-
-.tools-container .start-all {
-  background-color: rgb(0, 124, 128);
-}
-
-.tools-container .pause-all {
-  background-color: gray;
-}
-
-.tools-container .reset-all {
-  background-color: rgb(245, 189, 84);
 }
 
 .add-timer-modal {
@@ -80,11 +72,81 @@
   font-size: large;
 }
 
-.save-button {
-  border-radius: 7px;
+.add-timer-section .save-button {
+  border-radius: 20px;
   background-color: green;
   padding: 5px 10px 5px 10px;
   color: white;
+}
+
+.home-section .timer-section {
+  display: grid;
+  grid-template-columns: auto 30%;
+  column-gap: 5%;
+}
+
+.timer-section .timers-list-section {
+  width: 100%;
+  height: 90vh;
+}
+
+.timers-list-section .accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.accordion .accordion-section {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.accordion-section .accordion-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.accordion-header .actions-container button {
+  margin-left: 5px;
+  border-radius: 20px;
+  padding: 5px 10px 5px 10px;
+  color: white;
+}
+
+.actions-container .start-all {
+  background-color: rgb(0, 124, 128);
+}
+
+.actions-container .pause-all {
+  background-color: gray;
+}
+
+.actions-container .reset-all {
+  background-color: rgb(245, 189, 84);
+}
+
+.accordion-section .accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  border: 1px solid black;
+  transition: max-height 0.2s ease-out, padding 0.2s ease-out;
+}
+
+.accordion-section .accordion-content.open {
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+.accordion-content.open .details-container {
+  padding: 10px;
+  border-bottom: 1px solid black;
+}
+
+.accordion-content.open .details-container:nth-last-child() {
+  border-bottom: none;
 }
 
 .home-section .no-timer {
@@ -93,4 +155,12 @@
   justify-content: center;
   align-items: center;
   color: rgb(16, 124, 16);
+}
+
+
+@media screen and (max-width: 768px) {
+  .home-section .timer-section {
+    display: flex;
+    flex-direction: column;
+  }
 }
